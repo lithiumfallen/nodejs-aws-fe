@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
@@ -9,9 +9,9 @@ import {makeStyles} from '@material-ui/core/styles';
 import {Product} from "models/Product";
 import {formatAsPrice} from "utils/utils";
 import AddProductToCart from "components/AddProductToCart/AddProductToCart";
-// import axios from 'axios';
-// import API_PATHS from "constants/apiPaths";
-import productList from "./productList.json";
+import useSWR from 'swr';
+import axios from 'axios';
+import API_PATHS from "constants/apiPaths";
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -31,15 +31,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const getProducts = async (url: string) => {
+  const { data } = await axios.get(url);
+  
+  return data;
+}
+
 export default function Products() {
   const classes = useStyles();
-  const [products, setProducts] = useState<Product[]>([]);
-
-  useEffect(() => {
-    // axios.get(`${API_PATHS.bff}/product/available/`)
-    //   .then(res => setProducts(res.data));
-    setProducts(productList);
-  }, [])
+  const { data: products, error } = useSWR(`${API_PATHS.product}/products`, getProducts)
+  
+  if (error) return <div>failed to load</div>
+  if (!products) return <div>loading...</div>
 
   return (
     <Grid container spacing={4}>
@@ -48,7 +51,7 @@ export default function Products() {
           <Card className={classes.card}>
             <CardMedia
               className={classes.cardMedia}
-              image="https://source.unsplash.com/random"
+              image="/default.jpg"
               title="Image title"
             />
             <CardContent className={classes.cardContent}>
