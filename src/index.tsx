@@ -13,9 +13,20 @@ axios.interceptors.response.use(
     return response;
   },
   function(error) {
-    if (error.response.status === 400) {
-      alert(error.response.data?.data);
+    switch(error.response.status) {
+      case 400:
+        alert(error.response.data?.data);
+        break;
+      case 401:
+        alert('401: Unauthorized' + error.response.data?.message);
+        break;
+      case 403:
+        alert('403: Access denied' + error.response.data?.message);
+        break;
+      default:
+        console.log(error.response.data?.data)
     }
+
     return Promise.reject(error.response);
   }
 );
