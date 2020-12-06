@@ -39,7 +39,7 @@ const getProducts = async (url: string) => {
 
 export default function Products() {
   const classes = useStyles();
-  const { data: products, error } = useSWR(`${API_PATHS.product}/products`, getProducts)
+  const { data: products, error } = useSWR(`${API_PATHS.product}/products`, getProducts, { revalidateOnFocus: false })
   
   if (error) return <div>failed to load</div>
   if (!products) return <div>loading...</div>
